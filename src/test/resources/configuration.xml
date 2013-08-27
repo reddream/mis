@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+ <bean id="authConfig" class="org.web.config.AuthConfiguration" ></bean>
+ <bean id="themeConfiguration" class="org.web.config.ThemeConfiguration" >
+		<property name="theme" value="${ThemeConfiguration.theme}" ></property>
+ </bean>
+ <bean id="vendorConfiguration" class="org.web.config.VendorConfiguration" >
+		<property name="vendorColumnNames" >
+         <list>
+            <value>vendor.operator</value>
+ 			<value>vendor.createTime</value>
+ 			<value>vendor.updateTime</value>
+ 		 </list>
+        </property>
+ </bean>
+ <bean id="productConfiguration" class="org.web.config.ProductConfiguration" >
+        <property name="productColumnNames" >
+         <list>
+ 			<value>product.createTime</value>
+ 			<value>product.updateTime</value>
+ 		 </list>
+        </property>
+ </bean>
+ <bean id="passconfig" class="org.web.config.PasswordConfiguration" >
+ 	<property name="defaultPassword" value="${PasswordConfiguration.defaultPassword}" ></property>
+ 	<property name="minilength" value="${PasswordConfiguration.minilength}" ></property>
+ </bean>
+ <bean id="configurationManager" class="org.web.config.ConfigurationManager" >
+		<property name="configurations"  >
+			<map>
+				<entry key="authconfig"  >
+				 <ref bean="authConfig" ></ref>
+				</entry>
+				<entry key="themeconfig" >
+				 <ref bean="themeConfiguration" ></ref>
+				</entry>
+				<entry key="passconfig" >
+				 <ref bean="passconfig" ></ref>
+				</entry>
+			</map>
+		</property>
+ </bean>
+ 
+ <bean id="batchConfig" class="org.web.config.BatchConfiguration" >
+ 	<property name="productSize" value="500000" />
+ 	<property name="vendorSize" value="500000" />
+ 	<property name="keywords" >
+ 		<list>
+			<value>import.success</value>
+			<value>import.productPriceNull</value>
+			<value>import.productPriceInValid</value>
+			<value>import.productVendorNameNull</value>
+			<value>import.productVendorInValid</value>
+			<value>import.productOSNameNull</value>
+			<value>import.productOperatingSystemInValid</value>
+			<value>import.productCodeNull</value>
+			<value>import.productCodeInValid</value>
+			<value>import.productModelNameNull</value>
+			<value>import.productModelNameInValid</value>
+			<value>import.productBrandNameNull</value>
+			<value>import.productBrandNameInValid</value>
+			<value>import.vendorAreaNameNull</value>
+			<value>import.vendorAreaNameInValid</value>
+			<value>import.vendorLevelNameNull</value>
+			<value>import.vendorLevelNameInValid</value>
+			<value>import.vendorPayConditionNameNull</value>
+			<value>import.vendorPayConditionNameInValid</value>
+			<value>import.vendorNameAlreadyExist</value>
+			<value>import.vendorNameNull</value>
+			<value>import.vendorNameInValid</value>
+			<value>import.status</value>
+			<value>fileContentIsIncorrect</value>
+			<value>importTheXMLFileComplete</value>
+			<value>importTheCSVFileComplete</value>
+			<value>pleaseCheckTheFileSize</value>
+			<value>pleaseCheckTheFileFormat</value>
+			<value>importTheXlsxFileComplete</value>
+		</list>
+ 	</property>
+ 	<property name="productColumnCodes">
+ 		<list>
+ 			<value>Code</value>
+ 			<value>Name</value>
+ 			<value>OperatingSystem</value>
+ 			<value>Model</value>
+ 			<value>Vendor</value>
+ 			<value>Brand</value>
+ 			<value>Price</value>
+ 			<value>Feature</value>
+ 			<value>Remark</value>
+ 		</list>
+ 	</property>
+ 	<property name="productColumnNames">
+ 		<list>
+ 			<value>product.code</value>
+ 			<value>product.name</value>
+ 			<value>product.os</value>
+ 			<value>product.model</value>
+ 			<value>product.vendor</value>
+ 			<value>product.brand</value>
+ 			<value>product.price</value>
+ 			<value>product.feature</value>
+ 			<value>product.remark</value>
+ 		</list>
+ 	</property>	
+ 	
+ 	<property name="vendorColumnCodes">
+ 		<list>
+ 			<value>Area</value>
+ 			<value>Level</value>
+ 			<value>PayCondition</value>
+ 			<value>Name</value>
+ 		</list>
+ 	</property>
+ 	<property name="vendorColumnNames">
+ 		<list>
+ 			<value>vendor.area</value>
+ 			<value>vendor.level</value>
+ 			<value>vendor.payCondition</value>
+ 			<value>vendor.name</value>
+ 		</list>
+ 	</property>
+ </bean>
+ 
+</beans>

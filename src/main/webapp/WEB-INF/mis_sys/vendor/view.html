@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<@p.editheader />
+</head>
+<body>
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: 供应商 - 查看
+	</div>
+	<form class="ropt">
+<input type="submit" value="<@s.m "global.backToList"/>" onclick="this.form.action='list.htm';" class="return-button"/>
+	</form>
+	<div class="clear"></div>
+</div>
+
+<div class="body-box">
+<@p.form id="jvForm" action="edit.htm" labelWidth="15">
+<@p.td colspan="1" label="供应商名称" width="50"  >${bean.name}</@p.td>
+<@p.td colspan="1" label="付款方式" width="50"  >${bean.payCondition.name}</@p.td><@p.tr/>
+<@p.td colspan="1" label="等级" width="50"  >${bean.level.name}</@p.td>
+<@p.td colspan="1" label="区域" width="50"  >${bean.area.name}</@p.td><@p.tr/>
+<@p.td colspan="1" label="global.inactive" width="50"  ><#if bean.inactive==0 >有效<#else>无效</#if></@p.td>
+<@p.td colspan="1" label="操作员" width="50"  >${bean.operator.name}</@p.td><@p.tr/>
+</@p.form>
+</div>
+<@p.alertmessage />
+</body>
+</html>

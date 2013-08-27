@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="package" name="build-project">
+    
+    <property name="jar.prefix-name" value="mis"></property>
+    <property name="jar.version" value="1.0"></property>
+
+	<property name="tomcat.dir" value="D:/HRRS/apache-tomcat-7.0.30"></property>
+    <property name="project.lib.dir" value="${tomcat.dir}/extlib"></property>
+	<property name="project.tomcatlib.dir" value="${tomcat.dir}/lib"></property>
+
+    <property name="basedir" value="."/>
+
+    <property name="src.dir" value="${basedir}/src"></property>
+	<property name="controller.dir" value="${basedir}/controller"></property>
+	<property name="dao.dir" value="${basedir}/dao"></property>
+	<property name="models.dir" value="${basedir}/models"></property>
+	<property name="service.dir" value="${basedir}/service"></property>
+
+    <property name="build.dir" value="${basedir}/build/classes"></property>
+
+    <property name="dist.dir" value="${basedir}/dist"></property>
+          
+    <target name="init" description="init">
+        <echo>****init***</echo>
+        <delete dir="${build.dir}"></delete>
+        <delete dir="${dist.dir}"></delete>
+        
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+    
+    <target name="compile" depends="init" description="compile source">
+        <echo>***compile source****</echo>
+        <javac srcdir="${src.dir}:${controller.dir}:${dao.dir}:${models.dir}:${service.dir}" 
+         fork="yes"
+         debug="on"
+         includeantruntime="on"
+         includes="**/*.java"
+         memorymaximumsize="256m"
+		 target="1.7"
+		 destdir="${build.dir}">
+		<compilerarg value="-Xlint:unchecked" />
+        <classpath>
+            <fileset dir="${project.lib.dir}">
+                <include name="*.jar"/>
+            </fileset>
+			<fileset dir="${project.tomcatlib.dir}" >
+				<include name="*.jar"/>
+			</fileset>
+        </classpath>
+        </javac>
+    </target>
+
+    <target name="package" depends="compile" description="package">
+        <echo>***copy***</echo>
+		<copy todir="${dist.dir}/">
+           <fileset dir="${basedir}/WebContent"  defaultexcludes="true">
+             <include name="**" />
+           </fileset>
+        </copy>
+		
+		<copy todir="${build.dir}/">
+			<fileset dir="${basedir}/src/" defaultexcludes="true">
+				<exclude name="org/"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${dist.dir}/WEB-INF/">
+           <fileset dir="${basedir}/build"  defaultexcludes="true">
+             <include name="classes/" />
+           </fileset>
+        </copy>
+		<war
+            destfile="${dist.dir}/mis.war"
+            needxmlfile="false" >
+            <fileset dir="${dist.dir}" >
+                <include name="**" />
+            </fileset>
+        </war>  
+		<copy todir="${tomcat.dir}/webapps/">
+			<fileset dir="${dist.dir}">
+				<include name="mis.war"/>
+			</fileset>
+		</copy>
+  		
+    </target>  
+	
+	<target name="cleanallclasses" >
+        <delete verbose="true" includeemptydirs="true" failonerror="false">
+            <fileset dir="${basedir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </delete>
+	</target>
+     
+</project>

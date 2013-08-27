@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<@p.adminheadscript />
+<script type="text/javascript">
+function checkForm(){
+	var name = document.getElementsByName("file")[0].value;
+	if(name=="" || name== null){
+		return false;
+	}
+	var reg = new RegExp(/\.(xml|xls|xlsx)$/);	
+	if(name.match(reg)){
+		return true;
+	}else{
+		showMsg("<@s.m 'global.checkFileFormat'/>");
+		return false;
+	}
+}
+</script>
+</head>
+<body>
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: 产品 - 数据导入</div>
+	<form class="ropt">		
+	
+	</form>
+	<div class="clear"></div>
+</div>
+
+
+<div class="body-box">
+<form action="dataUpload.htm" method="post" style="padding-top:5px;"  enctype="multipart/form-data" onsubmit="return checkForm()">
+<div>
+<input type="file" name="file"  onchange="checkFile(this.value)"/>
+<input type="submit" value="提交" />
+</div>
+<@p.download code="import.showresult"  action="showresults.xls" isex=showresult!false >id=${importResult}</@p.download>
+</form>
+</div>
+<@p.alertmessage />
+</body>
+</html>

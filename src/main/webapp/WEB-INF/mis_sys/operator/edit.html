@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<@p.editheader />
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+</script>
+</head>
+<body>
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: 用户 -
+	<#assign vid=bean.id?default("") /> 
+	<#if vid?string!="" >
+	<@s.m "global.edit"/>
+	<#else>
+	<@s.m "global.add"/>
+	</#if>
+	</div>
+	<form class="ropt">
+<input type="submit" value="<@s.m "global.backToList"/>" onclick="this.form.action='list.htm';" class="return-button"/>
+	</form>
+	<div class="clear"></div>
+</div>
+
+<div class="body-box">
+<@p.form id="jvForm" action="edit.htm" labelWidth="15">
+<@p.text colspan="1" width="50" label="真实姓名" id="operatorName" name="name" value=bean.name required="true" class="required" maxlength="100"/>
+<#if  currentuser.id == bean.id!  >
+<@p.text colspan="1" width="50" label="用户名" id="loginName" name="login" value=bean.login required="true" class="required" readonly="true"  maxlength="100"/>
+<#else>
+<@p.text colspan="1" width="50" label="用户名" id="loginName" name="login" value=bean.login required="true" class="required"  maxlength="100"/>
+</#if>
+<@p.tr/>
+<@p.checkboxlist colspan="1" width="50" label="角色" list=roles valueList=bean.roleids name="roleids" listKey="id" listValue="name"  required="true" />
+<#if  currentuser.id!=bean.id! >
+<@p.td colspan="1" label="global.inactive" width="50"  >
+<@p.checkbox id="sinactive" name="sinactive" value=bean.inactive==1 hidname="inactive" hidvalue=bean.inactive  />
+</@p.td><@p.tr/>
+<#else>
+<@p.td colspan="1" label="global.inactive" width="50"  ><#if bean.inactive==0 >有效<#else>无效</#if>   <@p.hidden name="inactive" value=0 /> </@p.td>   <@p.tr/>
+</#if>
+<@p.td colspan="2"><@p.hidden name="id" value=bean.id! />
+<@p.submit2 code="global.submit"/> 
+&nbsp;
+<#if  currentuser.id!=bean.id! >
+<@p.submit2 code="global.resetpass" class="submitReset" onclick="$('#jvForm')[0].action='resetinedit.htm';"  /> 
+</#if>
+&nbsp;
+ <@p.reset code="global.reset"  /></@p.td>
+</@p.form>
+</div>
+<#if  currentuser.id == bean.id >
+<script type="text/javascript" >
+	$(document).ready(function(){
+		$("input[type=checkbox][name=roleids]",document.body).click(function(){
+			var tc=$(this);
+			var cc=tc[0];
+			if(cc.value=="${currentuser.currentRole.id}"){
+				if(!cc.checked){
+					showMsg("你不能叉掉你自己当前的这个角色.");
+					cc.checked=true;
+					return;
+				}
+			}
+		});
+	});
+</script>
+</#if>
+<#if message??>
+	<#if  currentuser.id == bean.id >
+		<script type="text/javascript" >
+			if(window.parent.parent!=undefined){
+				window.parent.parent.refreshTop("top.htm?t=${curtime}");
+			}
+		</script>
+	</#if>
+</#if>
+<@p.alertmessage />
+</body>
+</html>

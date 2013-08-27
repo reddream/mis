@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Products>
+ <Product>
+ 	<Code><![CDATA[xxxx ]]></Code>
+ 	<Name><![CDATA[xxxx ]]></Name>
+ 	<OS><![CDATA[xxxx ]]></OS>
+ 	<Model><![CDATA[xxxx ]]></Model>
+ 	<Vendor><![CDATA[xxxx ]]></Vendor>
+ 	<Brand><![CDATA[xxxx ]]></Brand>
+ 	<Price><![CDATA[xxxx ]]></Price>
+ 	<Feature><![CDATA[xxxx ]]></Feature>
+ 	<Remark><![CDATA[xxxx ]]></Remark>
+ </Product>
+</Products>

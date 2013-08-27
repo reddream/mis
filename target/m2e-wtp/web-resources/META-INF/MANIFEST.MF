@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Built-By: reddream
+Build-Jdk: 1.6.0_38
+Specification-Title: Mis
+Specification-Version: 1.0
+Implementation-Title: Mis
+Implementation-Version: 1.0
+Implementation-Vendor-Id: mis
+Created-By: Maven Integration for Eclipse
+

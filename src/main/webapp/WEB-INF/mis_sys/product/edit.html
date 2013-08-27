@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<@p.editheader />
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+
+function isfloat(oNum){
+
+	 if(!oNum) return false;
+
+	 var strP=/^\d+(\.\d+)?$/;
+
+	 if(!strP.test(oNum)) return false;
+
+	 try{
+
+	 	if(parseFloat(oNum)!=oNum) return false;
+
+	 }catch(ex){
+	   return false;
+
+	 }
+	 return true;
+}
+
+$(document).ready(function(){
+	$("#price").keyup(function(){
+		var v = $.trim(this.value);
+		if(v!="" && !isfloat(v) && !isfloat(v+"0")  ){
+			this.value="";
+			return;
+		}
+		this.value=$.trim(v);	
+	});
+	$("#btnSubmit").click(function(){
+		var priceVal=$("#price").val();
+		if($.trim(priceVal) == ""){
+			showMsg("价格没填写");
+			return false;	
+		}
+		var pr=$("#price");
+		if(!isfloat(pr.val())){
+			showMsg("价格填写错误");
+			return false;
+		}
+		return true;
+	});
+	
+});
+</script>
+</head>
+<body>
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: 产品 -
+	<#assign vid=bean.id?default("") /> 
+	<#if vid?string!="" >
+	<@s.m "global.edit"/>
+	<#else>
+	<@s.m "global.add"/>
+	</#if>
+	</div>
+	<form class="ropt">
+	<@p.cascade src="setBrand" dst="selModel" dsturl="getmodelsbybrandid.htm" hasblank=false />
+<input type="submit" value="<@s.m "global.backToList"/>" onclick="this.form.action='list.htm';" class="return-button"/>
+	</form>
+	<div class="clear"></div>
+</div>
+
+<div class="body-box">
+<@p.form id="jvForm" action="edit.htm" labelWidth="15">
+<@p.text colspan="1" width="50" label="产品名称" name="name" value=bean.name required="true" class="required" maxlength="100"/>
+<@p.text colspan="1" width="50" label="产品代码" name="code" value=bean.code required="true" class="required" maxlength="100"/><@p.tr/>
+<@p.select colspan="1" width="50" label="品牌" id="setBrand" list=brands name="brandId" listKey="id" listValue="name" value=bean.brandId! required="true" />
+<@p.select colspan="1" width="50" label="型号" id="selModel" list=models name="modelId" listKey="id" listValue="name" value=bean.modelId! required="true" /><@p.tr/>
+<@p.select colspan="1" width="50" label="系统" list=oss name="osId" listKey="id" listValue="name" value=bean.osId! required="true" />
+<@p.select colspan="1" width="50" label="供应商" list=vendorNames name="vendorId" listKey="id" listValue="name" value=bean.vendorId! required="true" /><@p.tr/>
+<@p.text colspan="1" width="50" id="price" label="价格" name="price" value=bean.price required="true" class="required" maxlength="100"/>
+<@p.td colspan="1" label="global.inactive" width="50"  ><@p.checkbox id="deleted" name="deleted" value=bean.deleted==1 hidname="deleted" hidvalue=bean.deleted /></@p.td><@p.tr/>
+<@p.td colspan="1" label="操作员" width="50"  >${bean.operator.name}</@p.td><@p.tr/>
+<@p.textarea colspan="2" width="50" cols="60" rows ="4" label="特点" name="features" value=bean.features required="true" class="required" maxlength="100"/>
+<@p.td colspan="1"><@p.hidden name="id" value=bean.id! /></@p.td><@p.tr/>
+<@p.textarea colspan="2" width="50" cols="60" rows ="4" label="备注" name="remark" value=bean.remark maxlength="100"/>
+<@p.td colspan="1"><@p.hidden name="id" value=bean.id! /></@p.td><@p.tr/>
+<@p.tr/>
+<@p.td colspan="2"><@p.hidden name="id" value=bean.id! />
+<@p.submit2 id="btnSubmit" code="global.submit"/> &nbsp; <@p.reset code="global.reset"/></@p.td>
+</@p.form>
+</div>
+<@p.alertmessage />
+</body>
+</html>

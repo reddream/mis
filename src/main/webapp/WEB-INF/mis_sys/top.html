@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "head.html" />
+<script type="text/javascript"
+	src="${base}/js/functions/login.js?t=${curtime}"></script>
+<style type="text/css">        
+*{margin:0;padding:0}
+a:focus {outline:none;}
+html{height:100%;overflow:hidden;}
+body{height:100%;}
+#top{ background-color:#1d63c6; height:69px; width:100%;}
+.logo{width:215px; height:390px;background:url(${base}/res/admin/img/admin/topbg.gif) no-repeat;}
+.topbg{background:url(${base}/res/admin/img/admin/top-tbg.png) no-repeat; height:38px;}
+.login-welcome{padding-left:20px; color:#fff; font-size:12px;background:url(${base}/res/admin/img/admin/topbg.gif) no-repeat;}
+.login-welcome a:link,.login-welcome a:visited{color:#fff; text-decoration:none;}
+
+#welcome {color: #FFFFFF;padding: 0 30px 0 5px;}
+#logout {color: #FFFFFF; padding-left: 5px;}
+
+.nav{height:31px; overflow:hidden;}
+.nav-menu{background:url(${base}/res/admin/img/admin/bg.png) repeat-x; height:31px; list-style:none; padding-left:20px; font-size:14px;}
+.nav .current {background: url(${base}/res/admin/img/admin/navcurrbg.gif) no-repeat 0px 2px; color:#fff; width:72px; text-align:center;} 
+.nav .current a{color:#fff;}
+.nav-menu li {height:31px;text-align:center; line-height:31px; float:left; }
+.nav-menu li a{color:#2b2b2b; font-weight:bold;}
+.nav-menu li.sep{background: url(${base}/res/admin/img/admin/step.png) no-repeat; width:2px; height:31px; margin:0px 5px;}
+.nav .normal{width:72px; text-align:center;}
+.top-bottom{width:100%; background: url(${base}/res/admin/img/admin/bg.png) repeat-x 0px -34px; height:3px;}
+.undis{display:none;}
+.dis{display:block;}
+</style>
+
+<script type="text/javascript">
+function HoverLi(h){
+	$("li[menu=1]",document.body).removeClass().addClass("normal");
+	$(h).removeClass().addClass("current");
+}
+
+function refreshIndex(){
+	window.parent.location.href="index.htm";
+}
+
+$(document).ready(function(){
+	$("#selRole").change(
+	  function(){
+		  document.getElementById("actionForm").submit();
+	  }		
+	);
+});
+
+var seconds=2*10000;
+function countUnreadMsg(){	
+	 $.ajax({
+			type : "POST",
+			url : "reminder/unread.htm",
+			dataType : "json",
+			timeout : 120000,
+			success : function(data) {
+				var rn=$("#reminderNotification");
+				if(data.unread==0)
+					rn.hide();
+				else{
+					rn.show();
+				}
+				
+			},
+			error : function() {
+			}								
+	});
+}
+
+$(function(){
+	$("#reminderNotification").click(function(){
+		$(this).hide();
+	}).hide();
+	$('a').bind("focus", function(){   
+	    $(this).blur();   
+	}); 
+	countUnreadMsg();
+});
+
+setInterval( "countUnreadMsg() ",seconds); 
+
+</script>
+</head>
+
+<body>
+<div id="top">
+     <div class="top">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td valign="top">
+                <div class="topbg">
+                     <div class="login-welcome">
+                             <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                  <tr>
+                                    <td  height="38">
+                                    <img src="${base}/res/admin/img/admin/welconlogin-icon.png"/><span id="welcome">欢迎   ${currentuser.currentRole.name},
+                                    ${currentuser.name}
+                                    </span>
+                                    <img src="${base}/res/admin/img/admin/loginout-icon.png"/><a href="javascript:void();" target="_top" id="logout" 
+                                    onclick="$.logout2('${base}');">注销</a>
+              <img src="${base}/res/admin/img/admin/message-unread.png"/>
+&nbsp;<a id="reminderNotification" href="reminder/reminder.htm" target="rightFrame">新消息,请点击</a>                                                        
+                                    </td>
+                                    <td align="right">
+                               <h3>
+                                    <form id="actionForm" action="top.htm" method="post" >
+                                    <@s.m "global.systemname" />&nbsp;&nbsp;
+                                    角色切换:<@p.selectmodel models=currentuser.roles id="selRole" name="roleid" value=currentuser.currentRole.id /> 	           
+			<#if refreshIndex >
+		<script type="text/javascript">
+		refreshIndex();
+		</script>	
+			</#if>     </form>                         
+                               </h3>   
+                               &nbsp;
+                                    </td>
+                                  </tr>
+                                </table>
+                       </div>  
+                     <div class="nav">
+                     	  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                <td style="background-image:url('${base}/res/admin/img/admin/nav-left.png')" width="14" height="31"></td>
+                                <td>
+                                	<ul class="nav-menu">
+                                    	<li class="current" id="tb_11" onclick="HoverLi(this);"  menu="1" >
+                                 			<a href="main.htm" target="mainFrame">首页</a>
+                                 		</li>	
+                                 		<@p.privilege operate="/admin/vendor/main" >
+										<li class="sep"></li>
+										<li class="normal" id="tb_12" onclick="HoverLi(this);"  menu="1" >
+										<a href="${base}/admin/vendor/main.htm" target="mainFrame">
+										供应商</a></li>
+										</@p.privilege>	
+										<@p.privilege operate="/admin/product/main" >
+										<li class="sep"></li>	
+										<li class="normal" id="tb_13" onclick="HoverLi(this);"  menu="1" >
+										<a href="${base}/admin/product/main.htm" target="mainFrame">
+										产品</a></li>	
+										</@p.privilege>	
+										<@p.privilege operate="/admin/operator/main" >
+										<li class="sep"></li>
+										<li class="normal" id="tb_14" onclick="HoverLi(this);" menu="1" >
+										<a href="${base}/admin/operator/main.htm" target="mainFrame">
+										用户</a></li>	
+										</@p.privilege>						
+                                    </ul>
+                                </td>
+                              </tr>
+                            </table>
+                     </div>  
+                </div>
+          </tr>
+        </table>
+     </div>
+</div>
+<div class="top-bottom"></div>
+</body>
+</html>

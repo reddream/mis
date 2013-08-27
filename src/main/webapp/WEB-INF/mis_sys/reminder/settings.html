@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>设置提醒</title>
+<@p.editheader />
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+</script>
+</head>
+<body>
+
+
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: 首页 - 每日提醒设置
+	</div>
+	<form class="ropt">
+<input type="submit" value="<@s.m "global.backToList"/>" onclick="this.form.action='reminder.htm';" class="return-button"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="settings.htm" method="post" width="70%">
+<@p.td colspan="1" label="时间设置" width="100"  ><@p.timestamp name="reminderTime" hour=bean.hour minute=bean.minute /></@p.td><@p.tr/>
+<@p.textarea colspan="1" width="80" label="提醒内容" name="content" value=bean.content  rows = "10" cols="50" required="true" class="required" maxlength="100"/><@p.tr/>
+<@p.td colspan="1">
+<@p.submit2 id="btnSubmit" code="global.submit"/> &nbsp; 
+<@p.reset code="global.reset"/></@p.td>
+</@p.form>
+</div>
+<@p.alertmessage />
+
+</body>
+</html>

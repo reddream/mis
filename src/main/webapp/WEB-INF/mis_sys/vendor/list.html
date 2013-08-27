@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<@p.adminheadscript />
+<@p.listjs />
+</head>
+<body>
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: 供应商 - <@s.m "global.list"/></div>
+	<form class="ropt">
+		<@p.privilege operate="edit" >
+		<input class="add" type="submit" value="<@s.m "global.add"/>" onclick="this.form.action='edit.htm';"/>
+		</@p.privilege >
+	</form>
+	<div class="clear"></div>
+</div>
+
+
+<div class="body-box">
+<form id="actionForm" action="list.htm" method="post" style="padding-top:5px;">
+<div>
+排序:
+<#if vr.showType == 0>
+<@p.selectoption name="queryOrderBy"  value=vr.queryOrderBy  list={"":"不排序","name.0":"名称升序","name.1","名称降序","area.0":"地区升序","area.1":"地区降序","level.0":"等级升序","level.1":"等级降序","payCondition.0":"付款方式升序","payCondition.1":"付款方式降序","inactive.0":"是否有效升序","inactive.1":"是否有效降序"} />
+<#else>
+<@p.selectoption name="queryOrderBy"  value=vr.queryOrderBy  list={"":"不排序","name.0":"名称升序","name.1","名称降序","area.0":"地区升序","area.1":"地区降序","level.0":"等级升序","level.1":"等级降序","payCondition.0":"付款方式升序","payCondition.1":"付款方式降序"} />
+</#if>
+地区:<@p.selectmodel models=areas id="selArea" name="areaid" value=vr.areaid /> 
+等级:<@p.selectmodel models=levels id="selLevel" name="levelid" value=vr.levelid /> 
+付款方式:<@p.selectmodel models=payConditions id="selPayCondition" name="payConditionid" value=vr.payConditionid/> 
+显示:<@p.selectoption name="showType" value=vr.showType list={"1":"有效","2":"无效","0":"全部"} />
+
+
+名称: <input type="text" name="vendorName" value="${vr.vendorName!}" style="width:100px"/>
+<@p.submit class="query" code="global.query" />
+</div>
+<div>
+导出:&nbsp;<@p.submit class="export" code="global.export" action="export.htm" />
+
+<@p.download code="global.export.excel" action="exportExcel.xls" isex=isexportCSV!false >areaid=${vr.areaid!}&vendorName=${vr.vendorName!}&levelid=${vr.levelid!}&payConditionid=${vr.payConditionid!}&queryOrderBy=${vr.queryOrderBy!}&showType=${vr.showType!}</@p.download>
+<@p.download code="global.export.xml" action="exportXML.xml" isex=isexportXML!false >areaid=${vr.areaid!}&vendorName=${vr.vendorName!}&levelid=${vr.levelid!}&payConditionid=${vr.payConditionid!}&queryOrderBy=${vr.queryOrderBy!}&showType=${vr.showType!}</@p.download>
+</div>
+</form>
+<form id="tableForm" method="post">
+<input type="hidden" name="pageNo" value="${vr.pageNo!}"/>
+ <@p.param >areaid=${vr.areaid!}&vendorName=${vr.vendorName!}&levelid=${vr.levelid!}&payConditionid=${vr.payConditionid!}&queryOrderBy=${vr.queryOrderBy!}&showType=${vr.showType}</@p.param>
+<@p.table value=pagination;vendor,i,has_next><#rt/>
+	<#if vr.showType==1 || vr.showType==2 >
+	<@p.column title="<input type='checkbox' onclick='Pn.checkbox(\"ids\",this.checked)'/>" width="20">
+		<input type='checkbox' name='ids' value='${vendor.id}'<#if vr.idlist?seq_contains(vendor.id) >checked</#if>/><#t/>
+	</@p.column><#t/>
+	</#if>
+	<@p.column title="名称"  align="left" >${vendor.name}</@p.column><#t/>
+	<@p.column title="地区"  align="left" >
+	 ${vendor.area.name}
+	</@p.column><#t/>
+	<@p.column title="等级"  align="left" >${vendor.level.name}</@p.column><#t/>
+	<@p.column title="付款方式"  align="left" >${vendor.payCondition.name}</@p.column><#t/>
+	<@p.column title="是否有效" align="center"><#if vendor.inactive==0>有效<#else >无效</#if></@p.column><#t/>
+	<@p.column title="更新时间" align="center"><@dateformat value=vendor.updatedTime.time /></@p.column><#t/>
+	<@p.column code="global.operate" align="center">
+		<#assign params></#assign>
+		<a href="#" class="pn-opt" onclick="window.location.href='view.htm?id=${vendor.id}';" >查看</a><#rt/>
+		<@p.privilege operate="edit" >
+		| <a href="#" class="pn-opt" onclick="window.location.href='edit.htm?id=${vendor.id}';" >编辑</a> 	 
+		</@p.privilege > 		
+		<#if vendor.inactive==0 >	
+		<@p.privilege operate="delete" >
+		| <#rt/>	
+		<a href="#" onclick="confirmex('<@s.m "global.confirm.delete"/>',function(){$.doActById(this,'delete.htm',${vendor.id});});" class="pn-opt"><@s.m "global.delete"/></a>
+		</@p.privilege >
+		<#else>
+		
+		<@p.privilege operate="recover" >
+		| <#rt/>	
+		<a href="#" onclick="confirmex('<@s.m "global.confirm.effect"/>', function(){$.doActById(this,'recover.htm',${vendor.id});});" class="pn-opt"><@s.m "global.effect"/></a>
+		</@p.privilege >
+		</#if>
+		
+	<#t/>
+	</@p.column><#t/>
+</@p.table>
+<div style="margin-top:15px;">
+    <#if vr.showType == 1 >
+	<@p.privilege operate="delete" >
+	<input type="button" value="<@s.m "global.delete"/>" onclick="optBatch('delete.htm');" class="del-button"/>
+	</@p.privilege >
+	</#if>
+	<#if vr.showType == 2 >
+	<@p.privilege operate="recover" >
+	<input type="button" value="<@s.m "global.effect"/>" onclick="optBatch('recover.htm');" class="del-button"  />
+	</@p.privilege >
+	</#if>
+</div>
+</form>
+</div>
+<@p.alertmessage />
+</body>
+</html>

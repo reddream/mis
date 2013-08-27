@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<@p.adminheadscript />
+<@p.listjs />
+</head>
+<body>
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: 产品- <@s.m "global.list"/></div>
+	<form class="ropt">
+		<@p.privilege operate="edit" >
+		<input class="add" type="submit" value="<@s.m "global.add"/>" onclick="this.form.action='edit.htm';"/>
+		</@p.privilege >
+	</form>
+	<div class="clear"></div>
+</div>
+
+<div class="body-box">
+<form id="actionForm" action="list.htm" method="post" style="padding-top:5px;">
+<div>
+
+<#if pr.showType==0 >
+排序:<@p.selectoption name="queryOrderBy"  value=pr.queryOrderBy list={"":"不排序","name.0":"名称升序","name.1","名称降序","code.0":"产品代码升序","code.1":"产品代码降序","os.0":"系统升序","os.1":"系统降序","brand.0":"品牌升序","brand.1":"品牌降序","model.0":"型号升序","model.1":"型号降序","vendor.0":"供应商名称升序","vendor.1":"供应商名称降序","price.0":"价格升序","price.1":"价格降序","deleted.0":"是否有效升序","deleted.1":"是否有效降序"} />
+<#else>
+排序:<@p.selectoption name="queryOrderBy"  value=pr.queryOrderBy list={"":"不排序","name.0":"名称升序","name.1","名称降序","code.0":"产品代码升序","code.1":"产品代码降序","os.0":"系统升序","os.1":"系统降序","brand.0":"品牌升序","brand.1":"品牌降序","model.0":"型号升序","model.1":"型号降序","vendor.0":"供应商名称升序","vendor.1":"供应商名称降序","price.0":"价格升序","price.1":"价格降序"} />
+</#if>
+品牌:<@p.selectmodel models=brands id="setBrand" name="brandid" value=pr.brandid/> 
+型号:<@p.selectmodel models=models id="selModel" name="modelid" value=pr.modelid /> 
+<@p.cascade src="setBrand" dst="selModel" dsturl="getmodelsbybrandid.htm" />
+系统:<@p.selectmodel models=oss id="selOs" name="osid" value=pr.osid /> 
+供应商:<@p.selectmodel models=vendorNames id="selVendorName" name="vendorid" value=pr.vendorid />
+名称:<input type="text" name="productName" value="${pr.productName!}" style="width:100px"/>
+产品代码:<input type="text" name="productCode" value="${pr.productCode!}" style="width:100px"/>
+特点:<input type="text" name="productFeatures" value="${pr.productFeatures!}" style="width:100px"/>
+显示:<@p.selectoption name="showType" value=pr.showType list={"1":"有效","2":"无效","0":"全部"} />
+<@p.submit class="query" code="global.query" />
+</div>
+<div>
+导出:&nbsp;<@p.submit class="export" code="global.export" action="export.htm" />
+
+<@p.download code="global.export.excel" action="exportExcel.xls" isex=isexportExcel!false >osid=${pr.osid!}&productName=${pr.productName!}&productCode=${pr.productCode!}&productFeatures=${pr.productFeatures!}&modelid=${pr.modelid!}&brandid=${pr.brandid!}&queryOrderBy=${pr.queryOrderBy!}&vendorid=${pr.vendorid!}&showType=${pr.showType!}</@p.download>
+<@p.download code="global.export.xml" action="exportXML.xml" isex=isexportXML!false >osid=${pr.osid!}&productName=${pr.productName!}&productCode=${pr.productCode!}&productFeatures=${pr.productFeatures!}&modelid=${pr.modelid!}&brandid=${pr.brandid!}&queryOrderBy=${pr.queryOrderBy!}&vendorid=${pr.vendorid!}&showType=${pr.showType!}</@p.download>
+</div>
+</form>
+<form id="tableForm" method="post"    >
+<input type="hidden" name="pageNo" value="${pr.pageNo!}"/>
+ <@p.param >osid=${pr.osid!}&productName=${pr.productName!}&productCode=${pr.productCode!}&productFeatures=${pr.productFeatures!}&modelid=${pr.modelid!}&brandid=${pr.brandid!}&queryOrderBy=${pr.queryOrderBy!}&vendorid=${pr.vendorid!}&showType=${pr.showType}</@p.param>
+<@p.table value=pagination;product,i,has_next><#rt/>
+	<#if pr.showType==1 || pr.showType==2 >
+	<@p.column title="<input type='checkbox' onclick='Pn.checkbox(\"ids\",this.checked)'/>" width="20">
+		<input type='checkbox' name='ids' value='${product.id}' <#if pr.idlist?seq_contains(product.id) >checked</#if>></input><#t/>
+	</@p.column><#t/>
+	</#if>
+	<@p.column title="名称" width="150px" align="left" >${product.name}</@p.column><#t/>
+	<@p.column title="产品代码"  align="left" >${product.code}</@p.column><#t/>
+	<@p.column title="系统"  align="left" >
+	 ${product.os.name}
+	</@p.column><#t/>
+	<@p.column title="品牌"  align="left" >${product.brand.name}</@p.column><#t/>
+	<@p.column title="型号"  align="left" >${product.model.name}</@p.column><#t/>
+	<@p.column title="供应商"  align="left" >${product.vendor.name}</@p.column><#t/>
+	<@p.column title="价格" align="center" >${product.price}</@p.column><#t/>
+	<@p.column title="特点"  align="left">${product.features}</@p.column><#t/>
+	<@p.column title="是否有效" align="center"><#if product.deleted==0>有效<#else >无效</#if></@p.column><#t/>
+	<@p.column title="更新时间" align="center"  width="150px"><@dateformat value=product.updatedTime.time /></@p.column><#t/>
+	<@p.column code="global.operate" align="center" width="150px">
+		<#assign params></#assign>
+		<a href="#" class="pn-opt" onclick="window.location.href='view.htm?id=${product.id}';" >查看</a> <#rt/>
+		<@p.privilege operate="edit" >
+		| <a href="#" class="pn-opt" onclick="window.location.href='edit.htm?id=${product.id}';">编辑</a> | <#rt/>
+		</@p.privilege >
+		<#if product.deleted==0 >
+		<@p.privilege operate="delete" >
+		<a href="#" onclick="confirmex('<@s.m "global.confirm.delete"/>' ,function(){$.doActById(this,'delete.htm',${product.id});});" class="pn-opt"><@s.m "global.delete"/></a>
+		</@p.privilege >
+		
+		<#else>
+		<@p.privilege operate="recover" >
+		<a href="#" onclick="confirmex('<@s.m "global.confirm.effect"/>' ,function(){$.doActById(this,'recover.htm',${product.id});});" class="pn-opt"><@s.m "global.effect"/></a>
+		</@p.privilege >
+		</#if>
+	<#t/>
+	</@p.column><#t/>
+</@p.table>
+<div style="margin-top:15px;">
+<#if pr.showType == 1 >
+	<@p.privilege operate="delete" >
+	<input type="button" value="<@s.m "global.delete"/>" onclick="optBatch('delete.htm');" class="del-button"/>
+	</@p.privilege >
+	</#if>
+	<#if pr.showType==2 >
+	<@p.privilege operate="recover" >
+	<input type="button" value="<@s.m "global.effect"/>"  onclick="optBatch('recover.htm');" class="del-button"  />
+	</@p.privilege >
+	</#if>
+</div>
+</form>
+</div>
+<@p.alertmessage />
+</body>
+</html>

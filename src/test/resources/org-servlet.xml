@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="  
+        http://www.springframework.org/schema/beans   
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd  
+        http://www.springframework.org/schema/mvc      
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd"
+	default-lazy-init="true">
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:org.properties</value>
+				<value>classpath:jdbc.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="cacheSeconds" value="-1" />
+		<property name="basenames">
+			<list>
+				<value>/WEB-INF/languages/header/messages</value>
+				<value>/WEB-INF/languages/login/messages</value>
+				<value>/WEB-INF/languages/tools/messages</value>
+				<value>/WEB-INF/languages/privilege/messages</value>
+				<value>/WEB-INF/languages/global/messages</value>
+				<value>/WEB-INF/languages/import/messages</value>
+				<value>/WEB-INF/languages/vendor/messages</value>
+				<value>/WEB-INF/languages/product/messages</value>
+			</list>
+		</property>
+	</bean>
+
+	<context:annotation-config />
+	<mvc:annotation-driven />
+	<context:component-scan base-package="org.mis.controller" />
+	<context:component-scan base-package="org.mis.service" />
+	<context:component-scan base-package="org.mis.dao" />
+	<context:component-scan base-package="org.web.security" />
+	<bean id="sessionProvider" class="org.web.session.HttpSessionProvider" />
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		p:defaultEncoding="utf-8" />
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/*" />
+			<mvc:mapping path="/*/*" />
+			<mvc:mapping path="/*/*/*" />
+			<bean class="org.web.AdminContextInterceptor">
+				<property name="auth" value="true" />
+				<property name="loginUrl" value="/login.htm" />
+				<property name="returnUrl" value="/main.htm" />
+				<property name="validatePrivilege" value="false" />
+				<property name="excludeUrls">
+					<list>
+						<value>/login</value>
+						<value>/logout</value>
+						<value>/index</value>
+					</list>
+				</property>
+				<property name="privilegePassPages">
+					<list>
+						<value>/admin/main</value>
+						<value>/admin/left</value>
+						<value>/admin/right</value>
+						<value>/admin/top</value>
+						<value>/admin/dashboard/left</value>
+						<value>/admin/dashboard/right</value>
+						<value>/admin/index</value>
+					</list>
+				</property>
+				<property name="privilegePassPagesReg">
+					<list>
+						<value>/admin/file</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+			<property name="messageConverters">
+					<list>
+						<ref bean="stringHttpMessageConverter" />
+						<ref bean="jsonHttpMessageConverter" />				
+					</list>
+			</property>	
+	</bean>
+
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+		<property name="cookieName" value="clientlanguage" />
+		<property name="cookieMaxAge" value="-1" />
+	</bean>
+
+	<bean id="encodingContent" class="org.web.directive.EncodingDirective" ></bean>
+	<bean id="freemarkerConfig"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath" value="/WEB-INF" />
+		<property name="freemarkerVariables">
+			<map>
+				<!--  <entry key="text_cut" 
+					value-ref="text_cut"/> <entry key="html_cut" value-ref="html_cut"/> -->
+				<entry key="perm" value-ref="perm"/>
+				<entry key="encodetext" value-ref="encodingContent" ></entry>	
+				<entry key="dateformat" value-ref="dateformat" ></entry> 
+				<entry key="doubleformat" value-ref="doubleformat" ></entry>
+			</map>
+		</property>
+		<property name="freemarkerSettings">
+			<props>
+				<prop key="template_update_delay">0</prop>
+				<prop key="defaultEncoding">UTF-8</prop>
+				<prop key="url_escaping_charset">UTF-8</prop>
+				<prop key="locale">zh_CN</prop>
+				<prop key="boolean_format">true,false</prop>
+				<prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+				<prop key="date_format">yyyy-MM-dd</prop>
+				<prop key="time_format">HH:mm:ss</prop>
+				<prop key="number_format">0.######</prop>
+				<prop key="whitespace_stripping">true</prop>
+				<prop key="auto_import">/ftl/index.ftl as p,/ftl/spring.ftl as s</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver"> 
+		<property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"></property> 
+		<property name="prefix" value="/view/"/> <property name="suffix" value=".html"/> 
+		<property name="contentType" value="text/html;charset=utf-8" /> <property 
+		name="exposeRequestAttributes" value="true" /> <property name="exposeSessionAttributes" 
+		value="true" /> <property name="exposeSpringMacroHelpers" value="true" /> 
+		</bean> <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
+		p:prefix="/WEB-INF/view/" p:suffix=".jsp"> </bean> -->
+	<bean id="freemarkerViewResolver" class="org.web.viewresolver.RichFreeMarkerViewResolver">
+		<property name="prefix" value="/mis_sys/" />
+		<property name="suffix" value=".html" />
+		<property name="contentType" value="text/html; charset=UTF-8" />
+		<property name="exposeRequestAttributes" value="false" />
+		<property name="exposeSessionAttributes" value="false" />
+		<property name="exposeSpringMacroHelpers" value="true" />
+		<property name="requestContextAttribute" value="rc"></property>
+	</bean>
+	
+	<bean id="stringHttpMessageConverter"
+		class="org.web.UTF8StringHttpMessageConverter" >  
+	</bean>
+
+	<bean id="jsonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" >
+				<property name = "supportedMediaTypes">
+                       <list>
+                           <value>text/html;charset=UTF-8</value>   
+                      </list>   
+        </property> 
+	</bean>
+
+	<bean id="marshallingHttpMessageConverter"
+		class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+		<constructor-arg ref="jaxbMarshaller" />
+		<property name="supportedMediaTypes" value="application/xml"></property>
+	</bean>
+	<bean id="cacheProvider" class="org.common.hibernate3.SpringEhCacheProvider">
+		<property name="configLocation">
+			<value>classpath:ehcache-hibernate.xml</value>
+		</property>
+		<property name="diskStoreLocation">
+			<value>/WEB-INF/cache/hibernate</value>
+		</property>
+	</bean>
+
+	<import resource="application.xml" />
+	<import resource="configuration.xml" />
+	<import resource="services.xml" />
+	<import resource="jobs.xml" />
+</beans> 

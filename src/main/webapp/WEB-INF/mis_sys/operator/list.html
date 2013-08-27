@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<@p.adminheadscript />
+<@p.listjs />
+</head>
+<body>
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: 用户 - <@s.m "global.list"/></div>
+	<form class="ropt">
+		<input class="add" type="submit" value="<@s.m "global.add"/>" onclick="this.form.action='edit.htm';"/>
+	</form>
+	<div class="clear"></div>
+</div>
+
+
+<div class="body-box">
+<form id="actionForm" action="list.htm" method="post" style="padding-top:5px;">
+<div>
+排序:
+<#if or.showType==0 >
+<@p.selectoption name="queryOrderBy"  value=or.queryOrderBy list={"":"不排序","name.0":"名称升序","name.1":"名称降序","login.0":"登录名升序","login.1":"登录名降序",
+"inactive.0":"是否有效升序",
+"inactive.1":"是否有效降序"} />
+<#else>
+<@p.selectoption name="queryOrderBy"  value=or.queryOrderBy list={"":"不排序","name.0":"名称升序","name.1":"名称降序","login.0":"登录名升序","login.1":"登录名降序"} />
+</#if>
+
+角色:<@p.selectmodel models=roles id="selRoles" name="roleId" value=or.roleId /> 
+姓名: <input type="text" name="operatorName" value="${or.operatorName!}" style="width:100px"/>
+登录名<input type="text" name = "loginName" value="${or.loginName!}"/>
+显示:<@p.selectoption name="showType" value=or.showType list={"1":"有效","2":"无效","0":"全部"} />
+<@p.submit class="query" code="global.query" />
+</div>
+</form>
+<form id="tableForm" method="post">
+<input type="hidden" name="pageNo" value="${or.pageNo!}"/>
+ <@p.param >roleid=${or.roleid!}&operatorName=${or.operatorName!}&loginName=${or.loginName!}&queryOrderBy=${or.queryOrderBy!}&showType=${or.showType!}</@p.param>
+<@p.table value=pagination;operator,i,has_next><#rt/>
+<#if or.showType==1 || or.showType==2 >
+	<@p.column title="<input type='checkbox' onclick='Pn.checkbox(\"ids\",this.checked)'/>" width="20">
+		<#if currentuser.id != operator.id >
+		<input type='checkbox' name='ids' value='${operator.id}' <#if or.idlist?seq_contains(operator.id) >checked</#if> />
+		</#if><#t/>	
+	</@p.column><#t/>
+	</#if>
+	<@p.column title="姓名"  align="left" >${operator.name}</@p.column><#t/>
+	<@p.column title="登录名"  align="left" >${operator.login}</@p.column><#t/>
+	<#if or.showType == 1 >
+	<@p.column title="是否有效" align="center"><#if operator.inactive==0>有效<#else >无效</#if></@p.column><#t/>
+	</#if>
+	<@p.column title="创建时间" align="center"><@dateformat value=operator.createdTime.time /></@p.column><#t/>
+	<@p.column title="更新时间" align="center"><@dateformat value=operator.updatedTime.time /></@p.column><#t/>
+	<@p.column code="global.operate" align="center">
+		<#assign params></#assign>
+		<a href="edit.htm?id=${operator.id}${params}" class="pn-opt">编辑</a> 
+		<#if currentuser.id != operator.id >
+		| <#rt/>
+		<#if operator.inactive==0 >
+		<a href="#" onclick="confirmex('<@s.m "global.confirm.delete"/>',function(){$.doActById(this,'delete.htm',${operator.id});});"class="pn-opt"><@s.m "global.delete"/></a>
+		<#else>
+		<a href="#" onclick="confirmex('<@s.m "global.confirm.effect"/>',function(){$.doActById(this,'recover.htm',${operator.id});});" class="pn-opt"><@s.m "global.effect"/></a>
+		</#if>
+		</#if>
+		<#if operator.id != currentuser.id >
+		| <#rt/>
+		<a href="#" onclick="confirmex('确定要重置该用户密码吗?',function(){$.doActById(this,'reset.htm',${operator.id});});" class="pn-opt">重置密码</a>		
+		</#if>
+	<#t/>
+	</@p.column><#t/>
+</@p.table>
+<div style="margin-top:15px;">
+	<#if or.showType == 1 >
+	<@p.privilege operate="delete" >
+	<input type="button" value="<@s.m "global.delete"/>" onclick="optBatch('delete.htm');" class="del-button"/>
+	</@p.privilege >
+	</#if>
+	<#if or.showType==2 >
+	<@p.privilege operate="recover" >
+	<input type="button" value="恢复"  onclick="optBatch('recover.htm');" class="del-button"  />
+	</@p.privilege >
+	</#if>
+</div>
+</form>
+</div>
+<@p.alertmessage />
+</body>
+</html>

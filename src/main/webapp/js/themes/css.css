@@ -1,0 +1,25 @@
+.loginform{
+	padding: 5px;
+	text-align:center;
+	position:relative;
+	top:50px	
+}
+.login copyright{
+	text-align:center;
+	position:relative;
+	top:20px
+}
+
+.loginform table{
+	border:0;
+	align:center;
+}
+.loginform table td{
+	border:0;
+	align:left;
+	text-align:left;
+}
+¡£loginform submit{
+	position:relative;
+	text-align:center;	
+}
